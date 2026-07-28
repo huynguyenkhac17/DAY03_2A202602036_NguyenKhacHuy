@@ -7,6 +7,7 @@ import inspect
 import json
 import os
 import sys
+import time
 from dotenv import load_dotenv
 
 # Đảm bảo import các module cùng thư mục src/ hoạt động mượt mà
@@ -46,16 +47,93 @@ def load_test_cases():
         return json.load(f)
 
 
-def run_baseline_chatbot(user_query: str, provider):
+def run_baseline_chatbot(user_query: str, provider, verbose: bool = True):
     """
-    Dựng Chatbot gốc (Baseline) không có công cụ.
+    Dựng Chatbot gốc (Baseline) — CẤP ĐỘ 2, không có công cụ.
+
+    Giao thức baseline (phải giữ đúng để so sánh công bằng với Agent ở Mốc 3):
+        system prompt + user message  ->  ĐÚNG 1 LLM call  ->  câu trả lời cuối
+
+    Baseline TUYỆT ĐỐI KHÔNG được: gọi tool, nhúng sẵn kết quả tool vào prompt,
+    hay khẳng định đã thực hiện xong một hành động nào đó.
+    Vì vậy hàm này không hề đụng tới AVAILABLE_TOOLS -> tool_calls luôn = 0.
     """
-    print(f"\n💬 [CHATBOT BASELINE] Câu hỏi: {user_query}")
-    print(f"⚙️ System Prompt: {CHATBOT_BASELINE_PROMPT.strip()}")
-    
-    # Gọi LLM Provider thực hiện sinh câu trả lời
+    if verbose:
+        print(f"\n💬 [CHATBOT BASELINE] Câu hỏi: {user_query}")
+
+    t0 = time.time()
     response = provider.generate(user_query, system_prompt=CHATBOT_BASELINE_PROMPT)
-    print(f"🤖 Chatbot trả lời:\n{response}")
+    elapsed = time.time() - t0
+
+    if verbose:
+        print(f"🤖 Chatbot trả lời:\n{response}")
+        print(f"📊 llm_calls=1 | tool_calls=0 | {elapsed:.2f}s")
+
+    return {
+        "question": user_query,
+        "answer": response,
+        "llm_calls": 1,
+        "tool_calls": 0,
+        "elapsed": elapsed,
+    }
+
+
+def run_baseline_on_all_cases(tests, provider):
+    """
+    Chạy Chatbot Baseline trên TOÀN BỘ test cases của Role 1 (checklist Mốc 2).
+    Trả về list kết quả để Role 5 đối chiếu và phân loại.
+    """
+    print("\n" + "=" * 70)
+    print("💬 MỐC 2 — CHẠY CHATBOT BASELINE TRÊN TOÀN BỘ TEST CASES")
+    print("=" * 70)
+    print(f"⚙️ System Prompt đang dùng (của Role 3):\n{CHATBOT_BASELINE_PROMPT.strip()}")
+
+    ket_qua = []
+    for case in tests:
+        print("\n" + "-" * 70)
+        print(f"🧪 Test Case #{case['id']} — {case.get('category', '')}")
+        print(f"🎯 Kỳ vọng: {case.get('expected_behavior', '')}")
+        r = run_baseline_chatbot(case["question"], provider)
+        r["id"] = case["id"]
+        r["category"] = case.get("category", "")
+        r["expected_behavior"] = case.get("expected_behavior", "")
+        ket_qua.append(r)
+
+    return ket_qua
+
+
+def xuat_ket_qua_baseline(ket_qua, provider_name: str, model_name: str):
+    """
+    Ghi kết quả Chatbot Baseline ra docs/baseline_output.md cho Role 5.
+
+    Role 5 giữ file docs/trace_eval.md, nên app KHÔNG ghi đè file đó.
+    File này là dữ liệu thô do máy sinh, Role 5 copy sang trace_eval.md rồi
+    phân loại từng case là correct / safe fallback / hallucinated.
+    """
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    duong_dan = os.path.join(base_dir, "docs", "baseline_output.md")
+
+    dong = [
+        "# 💬 KẾT QUẢ CHATBOT BASELINE (Mốc 2)\n\n",
+        "> File do `python src/app.py` sinh tự động — đừng sửa tay.\n",
+        "> Role 5 copy sang `docs/trace_eval.md` rồi phân loại từng case.\n\n",
+        f"* **Provider**: `{provider_name}` · **Model**: `{model_name}`\n",
+        f"* **Thời điểm chạy**: {time.strftime('%Y-%m-%d %H:%M:%S')}\n",
+        "* **Giao thức**: 1 LLM call / câu hỏi, `tool_calls = 0`\n\n---\n",
+    ]
+    for r in ket_qua:
+        dong.append(f"\n## Test Case #{r['id']} — {r['category']}\n\n")
+        dong.append(f"**Câu hỏi**: {r['question']}\n\n")
+        dong.append(f"**Kỳ vọng**: {r['expected_behavior']}\n\n")
+        dong.append(f"**Chatbot trả lời**:\n\n```text\n{r['answer']}\n```\n\n")
+        dong.append(f"* `llm_calls={r['llm_calls']}` · `tool_calls={r['tool_calls']}` · "
+                    f"`{r['elapsed']:.2f}s`\n")
+        dong.append("* **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`\n")
+        dong.append("\n---\n")
+
+    with open(duong_dan, "w", encoding="utf-8") as f:
+        f.write("".join(dong))
+    return duong_dan
 
 
 def kiem_tra_tool_registry():
@@ -110,12 +188,27 @@ if __name__ == "__main__":
         print("⚠️ config/test_cases.json đang rỗng — Role 1 cần bổ sung ở Mốc 2.")
         sys.exit(0)
 
-    # Chạy thử câu test số 3 (nếu chưa đủ 3 case thì lấy case đầu tiên)
-    sample_query = tests[2]["question"] if len(tests) >= 3 else tests[0]["question"]
-    print(f"🧪 Câu test đang dùng để demo: {sample_query}\n")
+    # ---------- MỐC 2: Chatbot Baseline trên toàn bộ test cases ----------
+    ket_qua_baseline = run_baseline_on_all_cases(tests, provider)
 
-    print("--- DEMO 1: CHẠY TRÊN CHATBOT BASELINE ---")
-    run_baseline_chatbot(sample_query, provider)
-    
-    print("\n--- DEMO 2: CHẠY TRÊN REACT AGENT ---")
-    run_react_agent(sample_query, provider)
+    print("\n" + "=" * 70)
+    print("📊 TỔNG KẾT CHATBOT BASELINE")
+    print("=" * 70)
+    print(f"{'Case':<8}{'LLM calls':<12}{'Tool calls':<13}{'Thời gian':<12}")
+    print("-" * 70)
+    for r in ket_qua_baseline:
+        print(f"#{r['id']:<7}{r['llm_calls']:<12}{r['tool_calls']:<13}{r['elapsed']:.2f}s")
+    tong_tg = sum(r["elapsed"] for r in ket_qua_baseline)
+    print("-" * 70)
+    print(f"{'TỔNG':<8}{len(ket_qua_baseline):<12}{0:<13}{tong_tg:.2f}s")
+    print("\n✅ Đúng giao thức baseline: mỗi câu 1 LLM call, tool_calls = 0.")
+
+    duong_dan = xuat_ket_qua_baseline(ket_qua_baseline, provider.__class__.__name__, model_name)
+    print(f"📝 Đã ghi kết quả ra: {os.path.relpath(duong_dan, os.getcwd())}")
+    print("   ➜ Role 5 copy sang docs/trace_eval.md để phân loại từng case.")
+
+    # ---------- MỐC 3: ReAct Agent (chưa lắp) ----------
+    print("\n" + "=" * 70)
+    print("🤖 MỐC 3 — REACT AGENT")
+    print("=" * 70)
+    run_react_agent(tests[0]["question"], provider)
