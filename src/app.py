@@ -535,18 +535,86 @@ def xuat_trace_react(ket_qua, provider_name: str, model_name: str):
     return duong_dan
 
 
+# =============================================================================
+# 💬 CHẾ ĐỘ CHAT TỰ DO — phục vụ MỐC 4 (Cross-Audit)
+# Nhóm bạn gõ thẳng câu bẫy vào đây để "tấn công" Agent ngay trên máy chiếu,
+# thay vì phải sửa config/test_cases.json rồi chạy lại cả bộ test (tốn quota).
+# =============================================================================
+def run_chat_mode(provider):
+    """Vòng lặp hỏi đáp trực tiếp. Mặc định chạy ReAct Agent."""
+    print("\n" + "=" * 70)
+    print("💬 CHẾ ĐỘ CHAT TỰ DO — dùng cho Mốc 4 (Chấm chéo / Tấn công Agent)")
+    print("=" * 70)
+    print("Gõ câu hỏi rồi Enter. Các lệnh đặc biệt:")
+    print("   /bot <câu hỏi>   — chạy Chatbot Baseline (không tool)")
+    print("   /so  <câu hỏi>   — chạy CẢ HAI để so sánh trực tiếp")
+    print("   /tools           — xem lại danh sách tool đang có")
+    print("   /thoat           — kết thúc phiên chat")
+    print("(Không gõ lệnh gì thì mặc định chạy ReAct Agent.)\n")
+
+    while True:
+        try:
+            dong = input("Bạn ➜ ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+
+        if not dong:
+            continue
+
+        lenh = dong.lower()
+        if lenh in ("/thoat", "/exit", "/quit", "exit", "quit", "thoat"):
+            break
+        if lenh in ("/tools", "/tool"):
+            kiem_tra_tool_registry()
+            continue
+
+        if lenh.startswith("/bot"):
+            cau_hoi = dong[4:].strip()
+            if not cau_hoi:
+                print("⚠️ Thiếu câu hỏi. Ví dụ: /bot Chính sách đổi trả bao lâu?")
+                continue
+            run_baseline_chatbot(cau_hoi, provider)
+
+        elif lenh.startswith("/so"):
+            cau_hoi = dong[3:].strip()
+            if not cau_hoi:
+                print("⚠️ Thiếu câu hỏi. Ví dụ: /so Kiểm tra đơn ORD1001")
+                continue
+            b = run_baseline_chatbot(cau_hoi, provider)
+            a = run_react_agent(cau_hoi, provider)
+            print("\n📊 SO SÁNH NHANH")
+            print(f"   Chatbot : tool_calls=0 · {b['elapsed']:.2f}s")
+            print(f"   Agent   : tool_calls={a['tool_calls']} · steps={a['steps']} · "
+                  f"dừng bởi={a['dung_boi']} · {a['elapsed']:.2f}s")
+
+        else:
+            run_react_agent(dong, provider)
+
+        print()
+
+    print("👋 Kết thúc phiên chat.")
+
+
 if __name__ == "__main__":
+    # --chat: bỏ qua bộ test, vào thẳng chế độ hỏi đáp trực tiếp (Mốc 4).
+    che_do_chat = "--chat" in sys.argv
+
     print("==================================================")
     print("🏫 ĐẠI HỌC VINUNI - BÀI LAB 3: CHATBOT VS REACT AGENT")
     print("==================================================")
-    
+
     # Khởi tạo Multi-Provider LLM Adapter (Đọc từ biến môi trường LLM_PROVIDER)
     provider = get_llm_provider()
     model_name = getattr(provider, "model_name", "Offline Mock Mode")
     print(f"🔌 LLM Provider đang hoạt động: {provider.__class__.__name__} (Model: {model_name})")
-    
+
     # Smoke test Mốc 1: xác nhận tools.py của Role 2 nạp được
     kiem_tra_tool_registry()
+
+    if che_do_chat:
+        run_chat_mode(provider)
+        sys.exit(0)
 
     tests = load_test_cases()
     print(f"\n✅ Đã tải thành công {len(tests)} Test Cases từ config/test_cases.json")
