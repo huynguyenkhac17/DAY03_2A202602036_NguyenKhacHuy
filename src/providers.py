@@ -4,8 +4,10 @@ Hỗ trợ chuyển đổi linh hoạt giữa các nhà cung cấp AI chỉ bằ
 """
 
 import os
+import re
 import sys
 import json
+import time
 import requests
 from dotenv import load_dotenv
 
@@ -25,28 +27,58 @@ class BaseLLMProvider:
 
 
 class GeminiProvider(BaseLLMProvider):
-    """Google Gemini Provider"""
+    """
+    Google Gemini Provider.
+
+    ⚠️ HAI CÁI BẪY CỦA FREE TIER — đọc trước khi đổi model:
+      1. 'gemini-2.5-flash' và 'gemini-2.5-flash-lite' đã bị Google khoá với tài
+         khoản tạo mới -> trả về 404 NOT_FOUND.
+      2. 'gemini-flash-latest' hiện trỏ tới 'gemini-3.6-flash', free tier chỉ cho
+         20 request/NGÀY. Vòng lặp ReAct đốt 2-4 request mỗi câu hỏi, chạy hết 5
+         test case là cạn quota cả ngày.
+    -> Dùng 'gemini-flash-lite-latest': hạn mức ngày rộng hơn nhiều, vẫn thừa sức
+       bám đúng định dạng Thought/Action của bài Lab.
+    """
+    MAX_RETRIES = 2
+    MAX_WAIT_SECONDS = 35
+
     def __init__(self, api_key: str = None, model: str = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        # ⚠️ ĐỪNG đổi lại thành 'gemini-2.5-flash': Google đã khoá model này với các
-        #    tài khoản tạo mới -> mọi request trả về 404 NOT_FOUND.
-        #    'gemini-flash-latest' luôn trỏ tới bản Flash mới nhất còn được hỗ trợ.
-        self.model_name = model or os.getenv("LLM_MODEL") or "gemini-flash-latest"
+        self.model_name = model or os.getenv("LLM_MODEL") or "gemini-flash-lite-latest"
         
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         if not self.api_key or self.api_key == "your_gemini_api_key_here":
             return "[Gemini Error]: Chưa cấu hình GEMINI_API_KEY trong file .env!"
-        try:
-            from google import genai
-            client = genai.Client(api_key=self.api_key)
-            contents = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
-            response = client.models.generate_content(
-                model=self.model_name,
-                contents=contents
-            )
-            return response.text
-        except Exception as e:
-            return f"[Gemini Exception]: {str(e)}"
+
+        contents = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+
+        for lan_thu in range(self.MAX_RETRIES + 1):
+            try:
+                from google import genai
+                client = genai.Client(api_key=self.api_key)
+                response = client.models.generate_content(
+                    model=self.model_name,
+                    contents=contents,
+                )
+                return response.text
+            except Exception as e:
+                loi = str(e)
+                het_quota = "429" in loi or "RESOURCE_EXHAUSTED" in loi
+                # Hết quota theo NGÀY thì chờ bao lâu cũng vô ích -> báo lỗi ngay.
+                theo_ngay = "PerDay" in loi
+                if het_quota and theo_ngay:
+                    return ("[Gemini Error]: Hết quota FREE TIER theo NGÀY cho model "
+                            f"'{self.model_name}'. Hãy đổi LLM_MODEL trong .env sang model "
+                            "khác (VD: gemini-flash-lite-latest), hoặc đợi sang ngày mai.")
+                if het_quota and lan_thu < self.MAX_RETRIES:
+                    m = re.search(r"'retryDelay':\s*'(\d+)s'", loi)
+                    cho = min(int(m.group(1)) + 2 if m else 15, self.MAX_WAIT_SECONDS)
+                    print(f"   ⏳ Gemini báo 429 (giới hạn/phút), chờ {cho}s rồi thử lại "
+                          f"(lần {lan_thu + 1}/{self.MAX_RETRIES})...")
+                    time.sleep(cho)
+                    continue
+                return f"[Gemini Exception]: {loi}"
+        return "[Gemini Exception]: Không thể gọi API sau nhiều lần thử lại."
 
 
 class OpenAIProvider(BaseLLMProvider):
