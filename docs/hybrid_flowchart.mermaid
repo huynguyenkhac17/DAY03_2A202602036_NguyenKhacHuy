@@ -1,0 +1,76 @@
+%% =============================================================================
+%% HYBRID DECISION FLOWCHART — Lab 03 (Mốc 4)
+%% Đề tài: Trợ Lý Tra Cứu Đơn Hàng & Xử Lý Đổi Trả
+%%
+%% Sơ đồ trả lời câu hỏi trung tâm của bài Lab:
+%%     "Khi nào chi phí orchestration của Agent là xứng đáng?"
+%%
+%% Căn cứ định tuyến lấy từ số liệu đo thật ở mục 5 docs/trace_eval.md:
+%%     Case #1, #2 (kiến thức chung) : Chatbot 4/6  — Agent 6/6  -> chênh lệch nhỏ,
+%%                                     Agent tốn thêm lượt mà không giải quyết thêm gì.
+%%     Case #3     (cần 1 tool)      : Chatbot 3/8  — Agent 8/8  -> Agent thắng đậm.
+%%     Case #4     (cần 2 tool)      : Chatbot 2/8  — Agent 7/8  -> Agent thắng đậm.
+%%     Case #5     (câu bẫy)         : Chatbot 4/6  — Agent 8/8  -> Agent từ chối CÓ bằng chứng.
+%%     Chi phí Agent: +80% LLM calls, +41% thời gian so với Chatbot.
+%% =============================================================================
+
+flowchart TD
+    U["👤 Câu hỏi của khách hàng"] --> R{"🔀 ROUTER<br/>Câu trả lời có cần dữ liệu thật<br/>trong hệ thống, hoặc cần thực hiện<br/>một hành động có side-effect?"}
+
+    %% ---------------- NHÁNH 1: CHATBOT PATH ----------------
+    R -->|"❌ KHÔNG cần<br/>Khái niệm · quy trình · lời khuyên<br/>VD: 'Đổi hàng và trả hàng khác gì nhau?'"| C1["💬 CHATBOT PATH<br/>CHATBOT_BASELINE_PROMPT"]
+    C1 --> C2["Đúng 1 LLM call<br/>tool_calls = 0"]
+    C2 --> C3["✅ Trả lời ngay<br/>~1.8s · rẻ nhất"]
+    C3 --> DONE(["🏁 Trả lời khách hàng"])
+
+    %% ---------------- NHÁNH 2: REACT AGENT PATH ----------------
+    R -->|"✅ CÓ cần<br/>Mã đơn · chính sách · tạo yêu cầu<br/>VD: 'Kiểm tra đơn ORD1001 và tạo yêu cầu đổi trả'"| A1{"Câu hỏi đã có đủ<br/>thông tin đầu vào chưa?<br/>mã đơn dạng ORDxxxx"}
+
+    A1 -->|"Thiếu mã đơn"| ASK["🙋 Hỏi lại khách hàng<br/>KHÔNG bịa mã đơn<br/>Final Answer · 0 tool call"]
+    ASK --> DONE
+
+    A1 -->|"Đủ thông tin"| A2["🧠 REACT AGENT PATH<br/>REACT_SYSTEM_PROMPT + Tool Catalog"]
+
+    %% ---------------- VÒNG LẶP REACT ----------------
+    A2 --> L1["🔄 Gọi LLM<br/>kèm scratchpad các bước trước"]
+    L1 --> L2{"Parse output"}
+
+    L2 -->|"Final Answer"| FIN["✅ Kết luận<br/>mọi chi tiết truy ngược được<br/>về Observation"]
+    FIN --> DONE
+
+    L2 -->|"Action: gọi tool"| L3{"Tool có trong<br/>AVAILABLE_TOOLS?"}
+    L2 -->|"Sai định dạng /<br/>tự bịa Observation"| ERR["⚠️ App cắt bỏ Observation giả<br/>Trả về Observation sửa lỗi<br/>để Agent xuất lại đúng mẫu"]
+    ERR --> G1
+
+    L3 -->|"Không có"| ERR2["⚠️ Observation: LỖI - tool không tồn tại<br/>kèm danh sách tool hợp lệ"]
+    ERR2 --> G1
+
+    L3 -->|"Có"| EXEC["⚙️ Thực thi tool thật<br/>get_order_status · get_return_policy<br/>· create_return_request"]
+    EXEC --> OBS["👁️ App chèn Observation<br/>LLM không bao giờ tự viết"]
+    OBS --> G1
+
+    %% ---------------- GUARDRAILS ----------------
+    G1{"🛡️ GUARDRAILS<br/>step nhỏ hơn MAX_ITERATIONS = 4 ?<br/>Action có bị lặp trùng tham số ?"}
+    G1 -->|"Còn budget<br/>và không lặp"| L1
+    G1 -->|"Chạm phanh:<br/>hết vòng lặp / lặp trùng /<br/>provider lỗi"| SAFE["🛟 SAFE FALLBACK<br/>Xin lỗi lịch sự, nêu rõ chưa hoàn tất<br/>TUYỆT ĐỐI không bịa kết quả<br/>Chuyển hotline 1900-1234"]
+    SAFE --> DONE
+
+    %% ---------------- TELEMETRY ----------------
+    C2 -.->|"ghi log"| TEL["📊 TELEMETRY<br/>steps · llm_calls · tool_calls<br/>· errors · dung_boi · thời gian"]
+    OBS -.->|"ghi log"| TEL
+    SAFE -.->|"ghi log"| TEL
+    FIN -.->|"ghi log"| TEL
+    TEL -.-> REP["📝 docs/auto/*.md<br/>➜ docs/trace_eval.md"]
+
+    %% ---------------- STYLE ----------------
+    classDef chatbot fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a5f
+    classDef agent fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+    classDef guard fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#7f1d1d
+    classDef router fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#78350f
+    classDef obs fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#4c1d95
+
+    class C1,C2,C3 chatbot
+    class A1,A2,L1,L2,L3,EXEC,OBS,FIN,ASK agent
+    class G1,SAFE,ERR,ERR2 guard
+    class R,U,DONE router
+    class TEL,REP obs
