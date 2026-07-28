@@ -109,19 +109,26 @@ def run_baseline_on_all_cases(tests, provider):
 
 def xuat_ket_qua_baseline(ket_qua, provider_name: str, model_name: str):
     """
-    Ghi kết quả Chatbot Baseline ra docs/baseline_output.md cho Role 5.
+    Ghi dữ liệu thô của Chatbot Baseline ra docs/auto/baseline_raw.md.
 
-    Role 5 giữ file docs/trace_eval.md, nên app KHÔNG ghi đè file đó.
-    File này là dữ liệu thô do máy sinh, Role 5 copy sang trace_eval.md rồi
-    phân loại từng case là correct / safe fallback / hallucinated.
+    ⚠️ Vì sao ghi vào thư mục docs/auto/ chứ không ghi thẳng vào docs/:
+    file này bị GHI ĐÈ mỗi lần chạy app. Trước đây nó nằm ở
+    docs/baseline_output.md, Role 5 sửa tay vào đó để phân loại -> lần chạy
+    sau xoá sạch, và git thì conflict. Tách hẳn thư mục docs/auto/ cho máy,
+    còn docs/ để cho người viết.
+
+    File nộp bài vẫn là docs/trace_eval.md do Role 5 giữ — app KHÔNG đụng vào.
     """
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    duong_dan = os.path.join(base_dir, "docs", "baseline_output.md")
+    thu_muc = os.path.join(base_dir, "docs", "auto")
+    os.makedirs(thu_muc, exist_ok=True)
+    duong_dan = os.path.join(thu_muc, "baseline_raw.md")
 
     dong = [
         "# 💬 KẾT QUẢ CHATBOT BASELINE (Mốc 2)\n\n",
-        "> File do `python src/app.py` sinh tự động — đừng sửa tay.\n",
-        "> Role 5 copy sang `docs/trace_eval.md` rồi phân loại từng case.\n\n",
+        "> ⚠️ File do `python src/app.py` sinh tự động, BỊ GHI ĐÈ mỗi lần chạy — đừng sửa tay.\n",
+        "> Đây KHÔNG phải file nộp bài. File nộp là `docs/trace_eval.md`.\n",
+        "> Role 5 copy số liệu sang `docs/trace_eval.md` rồi phân loại ở đó.\n\n",
         f"* **Provider**: `{provider_name}` · **Model**: `{model_name}`\n",
         f"* **Thời điểm chạy**: {time.strftime('%Y-%m-%d %H:%M:%S')}\n",
         "* **Giao thức**: 1 LLM call / câu hỏi, `tool_calls = 0`\n\n---\n",
@@ -129,7 +136,11 @@ def xuat_ket_qua_baseline(ket_qua, provider_name: str, model_name: str):
     for r in ket_qua:
         dong.append(f"\n## Test Case #{r['id']} — {r['category']}\n\n")
         dong.append(f"**Câu hỏi**: {r['question']}\n\n")
-        dong.append(f"**Kỳ vọng**: {r['expected_behavior']}\n\n")
+        # Lưu ý: expected_behavior của Role 1 mô tả hành vi mong đợi ở AGENT.
+        # Phải ghi rõ, không thì đọc báo cáo baseline sẽ tưởng Chatbot làm sai,
+        # trong khi Chatbot vốn KHÔNG được phép gọi tool.
+        dong.append(f"**Kỳ vọng ở Agent** (chỉ để đối chiếu — Chatbot baseline "
+                    f"không được gọi tool): {r['expected_behavior']}\n\n")
         dong.append(f"**Chatbot trả lời**:\n\n```text\n{r['answer']}\n```\n\n")
         dong.append(f"* `llm_calls={r['llm_calls']}` · `tool_calls={r['tool_calls']}` · "
                     f"`{r['elapsed']:.2f}s`\n")
@@ -480,7 +491,9 @@ def run_react_on_all_cases(tests, provider):
 def xuat_trace_react(ket_qua, provider_name: str, model_name: str):
     """Ghi trace ReAct ra docs/react_trace.md cho Role 5 (không đụng trace_eval.md)."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    duong_dan = os.path.join(base_dir, "docs", "react_trace.md")
+    thu_muc = os.path.join(base_dir, "docs", "auto")
+    os.makedirs(thu_muc, exist_ok=True)
+    duong_dan = os.path.join(thu_muc, "react_raw.md")
 
     dong = [
         "# 🤖 TRACE LOG REACT AGENT (Mốc 3)\n\n",
