@@ -26,29 +26,7 @@
 
 ---
 
-## 🔗 2. LINK NỘP BÀI (mỗi thành viên nộp repo riêng của mình)
-
-Mỗi bạn fork repo lớp về tài khoản cá nhân, nên **mỗi người nộp một link khác nhau**. Nội dung code thì giống nhau vì cùng đồng bộ từ repo tích hợp của Role 4.
-
-| Thành viên | Repo cá nhân (link nộp) |
-| :--- | :--- |
-| Nguyễn Khắc Huy — Role 4 *(repo tích hợp của nhóm)* | https://github.com/huynguyenkhac17/DAY03_2A202602036_NguyenKhacHuy |
-| Nguyễn Duy Lâm — Role 1 | `_(tự điền link repo của mình)_` |
-| Nguyễn Minh Hoàng — Role 2 | `_(tự điền link repo của mình)_` |
-| Nguyễn Quốc Hiệu — Role 3 | `_(tự điền link repo của mình)_` |
-| Lê Kim Nam — Role 5 | `_(tự điền link repo của mình)_` |
-
-**Các bước để lấy bản hoàn chỉnh về repo cá nhân trước khi nộp:**
-
-```bash
-git checkout main
-git pull group main      # kéo bản đã tích hợp từ repo của Role 4
-git push origin main     # đẩy lên repo cá nhân của chính mình
-```
-
----
-
-## ⚙️ 3. QUY TRÌNH GIT NHÓM ĐÃ DÙNG
+## ⚙️ 2. QUY TRÌNH GIT NHÓM ĐÃ DÙNG
 
 Vì mỗi người có repo riêng (không push chung được), nhóm lấy **repo của Role 4 làm hub tích hợp**.
 
@@ -90,11 +68,19 @@ python src/app.py          # chạy thử, KHÔNG push nếu app lỗi
 git push origin main
 ```
 
+**Lấy bản hoàn chỉnh về repo cá nhân (làm trước khi nộp bài):**
+
+```bash
+git checkout main
+git pull group main      # kéo bản đã tích hợp từ repo hub
+git push origin main     # đẩy lên repo cá nhân của chính mình
+```
+
 > ⚠️ **Bài học rút ra trong buổi làm**: phải `git pull group main` **ngay trước khi commit**, không phải pull một lần lúc đầu giờ rồi làm cả tiếng. Nhóm đã dính một conflict giả ở `src/app.py` chỉ vì Role 3 pull main từ sớm nên branch mang theo bản `app.py` cũ.
 
 ---
 
-## ⏱️ 4. CHECKLIST THỰC HÀNH THEO 4 MỐC
+## ⏱️ 3. CHECKLIST THỰC HÀNH THEO 4 MỐC
 
 ### 📍 MỐC 1: Định hình & Đánh giá độ phù hợp (Agentic Fit) — 20 phút
 
@@ -154,7 +140,7 @@ git push origin main
 
 ---
 
-## 🎯 5. CHUẨN BỊ CHO BUỔI CHẤM CHÉO
+## 🎯 4. CHUẨN BỊ CHO BUỔI CHẤM CHÉO
 
 **Lệnh demo trực tiếp** (không cần sửa file test cases, tiết kiệm quota API):
 
