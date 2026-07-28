@@ -14,6 +14,27 @@ Danh sách tool được đăng ký trong AVAILABLE_TOOLS sẽ được Agent
 sử dụng để tìm kiếm và thực thi khi cần.
 """
 
+# ORDERS = {
+#     "ORD1001": {
+#         "status": "Đã giao",
+#         "item": "Tai nghe Bluetooth",
+#         "placed_date": "2026-07-20",
+#         "total": "1,250,000 VNĐ",
+#     },
+#     "ORD1002": {
+#         "status": "Đang vận chuyển",
+#         "item": "Bút máy tính",
+#         "placed_date": "2026-07-24",
+#         "total": "320,000 VNĐ",
+#     },
+#     "ORD1003": {
+#         "status": "Chờ thanh toán",
+#         "item": "Máy sấy tóc",
+#         "placed_date": "2026-07-26",
+#         "total": "2,980,000 VNĐ",
+#     },
+# }
+
 
 def get_order_status(order_id: str) -> str:
     """
@@ -39,28 +60,7 @@ def get_order_status(order_id: str) -> str:
 
     order_id = str(order_id).strip().upper()
 
-    orders = {
-        "ORD1001": {
-            "status": "Đã giao",
-            "item": "Tai nghe Bluetooth",
-            "placed_date": "2026-07-20",
-            "total": "1,250,000 VNĐ",
-        },
-        "ORD1002": {
-            "status": "Đang vận chuyển",
-            "item": "Bút máy tính",
-            "placed_date": "2026-07-24",
-            "total": "320,000 VNĐ",
-        },
-        "ORD1003": {
-            "status": "Chờ thanh toán",
-            "item": "Máy sấy tóc",
-            "placed_date": "2026-07-26",
-            "total": "2,980,000 VNĐ",
-        },
-    }
-
-    order = orders.get(order_id)
+    order = ORDERS.get(order_id)
 
     if not order:
         return (
@@ -84,9 +84,6 @@ def create_return_request(order_id: str, reason: str) -> str:
     Tool này kiểm tra tính hợp lệ của đơn hàng và tạo một yêu cầu
     đổi/trả dựa trên lý do do khách hàng cung cấp.
 
-    Trong phiên bản demo, chỉ đơn hàng ORD1001 được phép tạo
-    yêu cầu đổi/trả.
-
     Args:
         order_id (str):
             Mã đơn hàng cần đổi/trả.
@@ -108,10 +105,10 @@ def create_return_request(order_id: str, reason: str) -> str:
 
     order_id = str(order_id).strip().upper()
 
-    if order_id != "ORD1001":
+    if order_id not in ORDERS:
         return (
-            "LỖI: Chỉ hỗ trợ tạo yêu cầu đổi/trả "
-            "cho đơn hàng ORD1001 trong demo này."
+            f"LỖI: Không tìm thấy đơn hàng '{order_id}'. "
+            "Vui lòng kiểm tra lại mã đơn."
         )
 
     return (
