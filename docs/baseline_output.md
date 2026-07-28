@@ -4,7 +4,7 @@
 > Role 5 copy sang `docs/trace_eval.md` rồi phân loại từng case.
 
 * **Provider**: `GeminiProvider` · **Model**: `gemini-flash-latest`
-* **Thời điểm chạy**: 2026-07-28 11:44:37
+* **Thời điểm chạy**: 2026-07-28 11:50:57
 * **Giao thức**: 1 LLM call / câu hỏi, `tool_calls = 0`
 
 ---
@@ -18,17 +18,17 @@
 **Chatbot trả lời**:
 
 ```text
-Chào bạn, điểm khác nhau cơ bản giữa đổi hàng và trả hàng như sau:
+Chào bạn! Sự khác nhau cơ bản giữa đổi hàng và trả hàng như sau:
 
-* **Đổi hàng:** Bạn gửi lại sản phẩm đã mua để **đổi lấy một sản phẩm mới** (thay đổi kích thước, màu sắc hoặc đổi sang sản phẩm khác).
-* **Trả hàng:** Bạn gửi trả lại sản phẩm cho cửa hàng và **nhận lại tiền** (hoàn tiền).
+* **Đổi hàng:** Bạn gửi lại sản phẩm đã mua để **nhận một sản phẩm khác** (thay đổi kích thước, màu sắc, mẫu mã hoặc đổi sản phẩm mới cùng loại nếu sản phẩm cũ bị lỗi).
+* **Trả hàng:** Bạn gửi lại sản phẩm và **nhận lại tiền** (hoàn tiền), không nhận thêm sản phẩm nào khác.
 
-*Lưu ý:* Quy định chi tiết về chi phí vận chuyển, thời gian áp dụng và điều kiện sản phẩm sẽ tùy thuộc vào chính sách riêng của từng cửa hàng.
+Mỗi cửa hàng sẽ có quy định và điều kiện áp dụng riêng cho từng hình thức. 
 
-Vì mình không có quyền truy cập trực tiếp vào dữ liệu hệ thống nội bộ, nếu bạn cần hỗ trợ kiểm tra điều kiện đổi/trả cho một đơn hàng cụ thể, vui lòng cung cấp **Mã đơn hàng** hoặc **Số điện thoại đặt hàng** để mình hướng dẫn chi tiết nhé!
+Nếu bạn cần tư vấn chi tiết hoặc muốn thực hiện đổi/trả cho một đơn hàng cụ thể, vui lòng cung cấp **Mã đơn hàng** hoặc **Số điện thoại đặt hàng**. Vì không có quyền truy cập trực tiếp vào hệ thống nội bộ, mình sẽ kiểm tra thông tin chung và hướng dẫn bạn các bước tiếp theo nhé!
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `8.85s`
+* `llm_calls=1` · `tool_calls=0` · `7.30s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -42,20 +42,20 @@ Vì mình không có quyền truy cập trực tiếp vào dữ liệu hệ th�
 **Chatbot trả lời**:
 
 ```text
-Xin chào! Để được hỗ trợ tra cứu đơn hàng, đổi trả hoặc bảo hành một cách nhanh chóng nhất, bạn vui lòng chuẩn bị sẵn các thông tin sau:
+Xin chào! Để bộ phận chăm sóc khách hàng có thể kiểm tra và hỗ trợ bạn một cách nhanh chóng nhất, bạn vui lòng chuẩn bị sẵn các thông tin sau:
 
-1. **Mã đơn hàng**
-2. **Số điện thoại hoặc Email** dùng khi đặt hàng
-3. **Mã vận đơn** (nếu bạn cần tra cứu hành trình vận chuyển)
-4. **Mã sản phẩm** hoặc tên sản phẩm cần hỗ trợ
-5. **Ảnh chụp hóa đơn/biên nhận** và **ảnh/video thực tế của sản phẩm** (nếu cần hỗ trợ đổi trả hoặc bảo hành)
+1. **Mã đơn hàng** (quan trọng nhất)
+2. **Số điện thoại** hoặc **Email** đã dùng để đặt hàng
+3. **Mã vận đơn** (nếu muốn tra cứu tiến độ giao hàng)
+4. **Mã hoặc tên sản phẩm** (nếu cần đổi trả/bảo hành)
+5. **Ảnh chụp hóa đơn/phiếu bảo hành** hoặc **ảnh/video quay rõ lỗi sản phẩm** (nếu yêu cầu đổi trả/bảo hành)
 
-*Lưu ý:* Do em không có quyền truy cập trực tiếp vào dữ liệu hệ thống nội bộ, việc bạn cung cấp đầy đủ thông tin trên sẽ giúp các nhân viên hỗ trợ xử lý yêu cầu của bạn nhanh nhất ạ. 
+*Lưu ý:* Do tôi không có quyền truy cập trực tiếp vào hệ thống dữ liệu nội bộ để kiểm tra trực tiếp cho bạn, việc chuẩn bị đầy đủ các thông tin trên sẽ giúp bạn nhận được sự hỗ trợ nhanh nhất khi làm việc với nhân viên tư vấn.
 
-Bạn cần em hỗ trợ thêm thông tin gì nữa không?
+Bạn cần tôi hướng dẫn thêm về quy trình tra cứu, đổi trả hay bảo hành không ạ?
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `5.38s`
+* `llm_calls=1` · `tool_calls=0` · `6.43s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -71,23 +71,17 @@ Bạn cần em hỗ trợ thêm thông tin gì nữa không?
 ```text
 Dạ xin chào quý khách! 
 
-Do em không có quyền truy cập vào dữ liệu hệ thống nội bộ của shop, nên em không thể cung cấp chính xác thời hạn và chính sách đổi trả riêng biệt của đơn hàng này.
+Vì em không có quyền truy cập vào dữ liệu hệ thống nội bộ, em không thể kiểm tra chính xác quy định riêng áp dụng cho đơn hàng của bạn. 
 
-Tuy nhiên, **thông thường** các shop sẽ hỗ trợ đổi trả với các tiêu chuẩn chung như sau:
-1. **Thời hạn:** Thường từ **7 đến 15 ngày** kể từ ngày quý khách nhận được hàng.
-2. **Điều kiện sản phẩm:**
-   - Sản phẩm còn nguyên tem, mác, hộp/bao bì nguyên vẹn.
-   - Chưa qua sử dụng, chưa giặt tẩy, không bị trầy xước hay hỏng hóc do tác động bên ngoài.
-   - Lỗi xuất phát từ nhà sản xuất hoặc do shop giao sai mẫu/size.
+Tuy nhiên, thông thường các sản phẩm sẽ được hỗ trợ đổi trả trong vòng **7 - 14 ngày** nếu đáp ứng các điều kiện chung sau:
+1. Sản phẩm còn nguyên tem, mác, nguyên bao bì/hộp và quà tặng đi kèm (nếu có).
+2. Sản phẩm chưa qua sử dụng, chưa qua giặt tẩy và không bị hư hỏng do tác động từ phía khách hàng.
+3. Có hóa đơn, phiếu giao hàng hoặc bằng chứng mua hàng.
 
-Để em có thể hỗ trợ kiểm tra chi tiết trường hợp của mình với bộ phận chăm sóc khách hàng, quý khách vui lòng cung cấp thêm:
-- **Mã đơn hàng** hoặc **Số điện thoại/Email** đặt hàng.
-- **Mã sản phẩm** cần đổi trả (hoặc ảnh chụp hóa đơn/sản phẩm lỗi nếu có).
-
-Em xin cảm ơn quý khách!
+Để em có thể tiếp nhận và hỗ trợ kiểm tra trường hợp của bạn nhanh nhất, bạn vui lòng cung cấp **Mã đơn hàng**, **Số điện thoại/Email đặt hàng** hoặc **Mã sản phẩm** nhé!
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `7.55s`
+* `llm_calls=1` · `tool_calls=0` · `6.84s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -101,18 +95,10 @@ Em xin cảm ơn quý khách!
 **Chatbot trả lời**:
 
 ```text
-Dạ chào bạn, mình rất tiếc về sự cố tai nghe Bluetooth trong đơn hàng **ORD1001** bị lỗi một bên.
-
-Tuy nhiên, do **không có quyền truy cập vào hệ thống dữ liệu nội bộ**, mình không thể trực tiếp kiểm tra trạng thái đơn hàng cũng như tự động tạo yêu cầu đổi trả trên hệ thống giúp bạn.
-
-Để bộ phận chăm sóc khách hàng có thể tiếp nhận và xử lý đổi trả nhanh nhất, bạn vui lòng cung cấp thêm các thông tin sau:
-1. **Số điện thoại** hoặc **Email** đã dùng để đặt đơn hàng ORD1001.
-2. **Hình ảnh/Video ngắn** quay lại lỗi của tai nghe (hoặc ảnh chụp hóa đơn/mã sản phẩm).
-
-Ngay khi nhận được thông tin, mình sẽ hướng dẫn bạn kết nối trực tiếp với nhân viên hỗ trợ để hoàn tất thủ tục đổi trả nhé!
+[Gemini Exception]: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 2.148693084s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.6-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '2s'}]}}
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `8.80s`
+* `llm_calls=1` · `tool_calls=0` · `0.50s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -126,20 +112,10 @@ Ngay khi nhận được thông tin, mình sẽ hướng dẫn bạn kết nối
 **Chatbot trả lời**:
 
 ```text
-Xin chào bạn,
-
-Dạ em rất tiếc về sự cố sản phẩm bị lỗi đối với đơn hàng **ORD9999**. 
-
-Tuy nhiên, do em là trợ lý AI nên **không có quyền truy cập vào hệ thống nội bộ** để tự động tạo yêu cầu đổi trả trực tiếp cho bạn được.
-
-Để bộ phận CSKH có thể tiếp nhận và xử lý yêu cầu đổi trả ngay cho bạn, vui lòng cung cấp thêm các thông tin sau:
-1. **Số điện thoại** hoặc **Email** dùng khi đặt hàng.
-2. **Hình ảnh/Video** quay rõ lỗi của sản phẩm và **ảnh chụp hóa đơn** (nếu có).
-
-Ngay khi nhận đủ thông tin, em sẽ chuyển dữ liệu sang bộ phận nhân viên hỗ trợ để xử lý cho mình ngay ạ!
+[Gemini Exception]: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 1.612149529s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.6-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '1s'}]}}
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `9.76s`
+* `llm_calls=1` · `tool_calls=0` · `0.56s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
