@@ -3,47 +3,99 @@
 Nơi khai báo tất cả các "món đồ nghề" mà ReAct Agent có thể gọi.
 """
 
-def get_weather(location: str) -> str:
+def get_order_status(order_id: str) -> str:
     """
-    Tra cứu thời tiết hiện tại của một thành phố.
-    
+    Tra cứu trạng thái và thông tin chi tiết của một đơn hàng.
+
     Args:
-        location (str): Tên thành phố (Ví dụ: 'Hà Nội', 'TP.HCM', 'Đà Nẵng')
-        
+        order_id (str): Mã đơn hàng cần tra cứu (ví dụ: ORD1001)
+
     Returns:
-        str: Thông tin thời tiết chi tiết
+        str: Thông tin trạng thái đơn hàng hoặc thông báo lỗi nếu không tìm thấy
     """
-    loc_lower = location.lower()
-    if "hà nội" in loc_lower or "ha noi" in loc_lower:
-        return "Thời tiết Hà Nội: 28°C, Nắng nhẹ, Độ ẩm 65%."
-    elif "hồ chí minh" in loc_lower or "tp.hcm" in loc_lower or "hcm" in loc_lower:
-        return "Thời tiết TP.HCM: 33°C, Nắng nóng, Có mây."
-    elif "đà nẵng" in loc_lower or "da nang" in loc_lower:
-        return "Thời tiết Đà Nẵng: 30°C, Gió nhẹ, Mát mẻ."
-    else:
-        return f"LỖI: Không tìm thấy dữ liệu thời tiết cho địa điểm '{location}'."
+    if not order_id or not str(order_id).strip():
+        return "LỖI: Vui lòng cung cấp mã đơn hàng."
+
+    order_id = str(order_id).strip().upper()
+    orders = {
+        "ORD1001": {
+            "status": "Đã giao",
+            "item": "Tai nghe Bluetooth",
+            "placed_date": "2026-07-20",
+            "total": "1,250,000 VNĐ",
+        },
+        "ORD1002": {
+            "status": "Đang vận chuyển",
+            "item": "Bút máy tính",
+            "placed_date": "2026-07-24",
+            "total": "320,000 VNĐ",
+        },
+        "ORD1003": {
+            "status": "Chờ thanh toán",
+            "item": "Máy sấy tóc",
+            "placed_date": "2026-07-26",
+            "total": "2,980,000 VNĐ",
+        },
+    }
+
+    order = orders.get(order_id)
+    if not order:
+        return f"LỖI: Không tìm thấy đơn hàng '{order_id}'. Vui lòng kiểm tra lại mã đơn."
+
+    return (
+        f"Đơn hàng {order_id}:\n"
+        f"- Trạng thái: {order['status']}\n"
+        f"- Sản phẩm: {order['item']}\n"
+        f"- Ngày đặt: {order['placed_date']}\n"
+        f"- Tổng tiền: {order['total']}"
+    )
 
 
-def search_flights(origin: str, destination: str) -> str:
+def create_return_request(order_id: str, reason: str) -> str:
     """
-    Tra cứu chuyến bay giữa hai địa điểm.
-    
+    Tạo yêu cầu đổi/trả cho một đơn hàng đã giao.
+
     Args:
-        origin (str): Nơi đi (Ví dụ: 'TP.HCM')
-        destination (str): Nơi đến (Ví dụ: 'Hà Nội')
-        
+        order_id (str): Mã đơn hàng cần đổi/trả
+        reason (str): Lý do đổi/trả (ví dụ: sản phẩm lỗi, không đúng mô tả)
+
     Returns:
-        str: Danh sách chuyến bay khả dụng và giá vé
+        str: Thông báo xác nhận hoặc lỗi nếu đơn hàng không hợp lệ
+    """
+    if not order_id or not str(order_id).strip():
+        return "LỖI: Vui lòng cung cấp mã đơn hàng."
+    if not reason or not str(reason).strip():
+        return "LỖI: Vui lòng cho biết lý do đổi/trả."
+
+    order_id = str(order_id).strip().upper()
+    if order_id != "ORD1001":
+        return f"LỖI: Chỉ hỗ trợ tạo yêu cầu đổi/trả cho đơn hàng ORD1001 trong demo này."
+
+    return (
+        f"Yêu cầu đổi/trả cho đơn hàng {order_id} đã được ghi nhận.\n"
+        f"Lý do: {reason}\n"
+        f"Trạng thái: Đang chờ xác nhận từ bộ phận hỗ trợ"
+    )
+
+
+def get_return_policy() -> str:
+    """
+    Trả về chính sách đổi/trả cơ bản cho khách hàng.
+
+    Returns:
+        str: Chính sách đổi/trả ngắn gọn
     """
     return (
-        f"Chuyến bay từ {origin} -> {destination} ngày mai:\n"
-        f"1. VN123 (08:00) - Giá: 1,500,000 VNĐ (Còn vé)\n"
-        f"2. VJ456 (14:30) - Giá: 1,200,000 VNĐ (Còn vé)"
+        "Chính sách đổi/trả:\n"
+        "- Đơn hàng có thể đổi/trả trong vòng 7 ngày kể từ ngày nhận hàng.\n"
+        "- Sản phẩm phải còn nguyên tem, hộp và chưa qua sử dụng.\n"
+        "- Nếu sản phẩm lỗi hoặc giao sai, shop sẽ hỗ trợ miễn phí vận chuyển trả hàng."
     )
 
 
 # Danh sách các tool được đăng ký để Agent sử dụng
 AVAILABLE_TOOLS = {
-    "get_weather": get_weather,
-    "search_flights": search_flights,
+    "get_order_status": get_order_status,
+    "create_return_request": create_return_request,
+    "get_return_policy": get_return_policy,
 }
