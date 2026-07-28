@@ -69,7 +69,7 @@ python src/app.py
 
 ### Kiến trúc — biết trước khi code
 
-Mở [README.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/README.md) và [docs/PHAN_CONG_CONG_VIEC.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/docs/PHAN_CONG_CONG_VIEC.md). Đọc sơ đồ bên dưới — nhóm bạn sẽ xây từng phần:
+Mở [README.md](../README.md) và [docs/PHAN_CONG_CONG_VIEC.md](./PHAN_CONG_CONG_VIEC.md). Đọc sơ đồ bên dưới — nhóm bạn sẽ xây từng phần:
 
 ```mermaid
 flowchart LR
@@ -357,14 +357,14 @@ Chạy bộ Test Cases trên cả Chatbot Baseline và ReAct Agent, hoàn thiệ
 
 ### 📋 CHECKLIST ARTIFACTS BẮT BUỘC KHI NỘP BÀI
 
-- [X] 📘 [README.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/README.md) — Tổng quan kiến trúc & Rubric chấm điểm.
-- [X] 📋 [docs/PHAN_CONG_CONG_VIEC.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/docs/PHAN_CONG_CONG_VIEC.md) — Sổ tay phân công 5 Roles & Checklist theo mốc.
-- [X] 💡 [docs/DANH_SACH_DE_TAI.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/docs/DANH_SACH_DE_TAI.md) — Danh sách 10 chủ đề gợi ý.
-- [X] 📊 [docs/trace_eval.md](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/docs/trace_eval.md) — Báo cáo Log Trace & Bảng đánh giá Scoring Matrix.
-- [X] 🟢 [config/test_cases.json](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/config/test_cases.json) — Bộ đề Test Cases.
-- [X] 🛠️ [src/tools.py](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/src/tools.py) — Khai báo các công cụ (Role 2).
-- [X] 🧠 [src/prompts.py](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/src/prompts.py) — System Prompt ReAct & Guardrails (Role 3).
-- [X] 🚀 [src/app.py](file:///c:/Users/Admin/Documents/VinUni/LabCoachVin/LabKeyCoach/Day-3-Lab-Chatbot-vs-react-agent-E402/src/app.py) — Core App ghép nối vòng lặp ReAct (Role 4).
+- [X] 📘 [README.md](../README.md) — Tổng quan kiến trúc & Rubric chấm điểm.
+- [X] 📋 [docs/PHAN_CONG_CONG_VIEC.md](./PHAN_CONG_CONG_VIEC.md) — Sổ tay phân công 5 Roles & Checklist theo mốc.
+- [X] 💡 [docs/DANH_SACH_DE_TAI.md](./DANH_SACH_DE_TAI.md) — Danh sách 10 chủ đề gợi ý.
+- [X] 📊 [docs/trace_eval.md](./trace_eval.md) — Báo cáo Log Trace & Bảng đánh giá Scoring Matrix.
+- [X] 🟢 [config/test_cases.json](../config/test_cases.json) — Bộ đề Test Cases.
+- [X] 🛠️ [src/tools.py](../src/tools.py) — Khai báo các công cụ (Role 2).
+- [X] 🧠 [src/prompts.py](../src/prompts.py) — System Prompt ReAct & Guardrails (Role 3).
+- [X] 🚀 [src/app.py](../src/app.py) — Core App ghép nối vòng lặp ReAct (Role 4).
 
 ---
 
