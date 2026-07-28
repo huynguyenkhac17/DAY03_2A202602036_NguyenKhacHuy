@@ -14,26 +14,26 @@ Danh sách tool được đăng ký trong AVAILABLE_TOOLS sẽ được Agent
 sử dụng để tìm kiếm và thực thi khi cần.
 """
 
-# ORDERS = {
-#     "ORD1001": {
-#         "status": "Đã giao",
-#         "item": "Tai nghe Bluetooth",
-#         "placed_date": "2026-07-20",
-#         "total": "1,250,000 VNĐ",
-#     },
-#     "ORD1002": {
-#         "status": "Đang vận chuyển",
-#         "item": "Bút máy tính",
-#         "placed_date": "2026-07-24",
-#         "total": "320,000 VNĐ",
-#     },
-#     "ORD1003": {
-#         "status": "Chờ thanh toán",
-#         "item": "Máy sấy tóc",
-#         "placed_date": "2026-07-26",
-#         "total": "2,980,000 VNĐ",
-#     },
-# }
+ORDERS = {
+    "ORD1001": {
+        "status": "Đã giao",
+        "item": "Tai nghe Bluetooth",
+        "placed_date": "2026-07-20",
+        "total": "1,250,000 VNĐ",
+    },
+    "ORD1002": {
+        "status": "Đang vận chuyển",
+        "item": "Bút máy tính",
+        "placed_date": "2026-07-24",
+        "total": "320,000 VNĐ",
+    },
+    "ORD1003": {
+        "status": "Chờ thanh toán",
+        "item": "Máy sấy tóc",
+        "placed_date": "2026-07-26",
+        "total": "2,980,000 VNĐ",
+    },
+}
 
 
 def get_order_status(order_id: str) -> str:

@@ -4,7 +4,7 @@
 > Role 5 copy sang `docs/trace_eval.md` rồi phân loại từng case.
 
 * **Provider**: `GeminiProvider` · **Model**: `gemini-flash-lite-latest`
-* **Thời điểm chạy**: 2026-07-28 12:13:06
+* **Thời điểm chạy**: 2026-07-28 12:23:26
 * **Giao thức**: 1 LLM call / câu hỏi, `tool_calls = 0`
 
 ---
@@ -20,13 +20,15 @@
 ```text
 Chào bạn, sự khác biệt cơ bản giữa đổi hàng và trả hàng như sau:
 
-* **Đổi hàng:** Là hình thức bạn đổi sản phẩm hiện tại lấy một sản phẩm khác (cùng loại nhưng khác size/màu, hoặc sang một sản phẩm khác) do nhu cầu hoặc lỗi sản phẩm.
-* **Trả hàng:** Là hình thức bạn gửi lại sản phẩm cho cửa hàng/nhà bán hàng và nhận lại tiền hoàn (hoặc số dư tài khoản mua sắm) do không còn nhu cầu hoặc sản phẩm bị lỗi không thể khắc phục.
+* **Đổi hàng:** Bạn đổi sản phẩm hiện tại lấy sản phẩm khác (cùng loại khác size/màu, hoặc sản phẩm hoàn toàn mới bù trừ chênh lệch giá).
+* **Trả hàng:** Bạn gửi lại sản phẩm cho cửa hàng và nhận lại tiền hoàn (hoặc voucher tương đương).
 
-*Lưu ý: Để biết chính xác điều kiện, thời gian và phí áp dụng cho việc đổi trả của đơn hàng cụ thể, tôi rất tiếc hiện không có quyền truy cập vào dữ liệu nội bộ của hệ thống. Bạn vui lòng cung cấp mã đơn hàng, số điện thoại hoặc email đặt hàng để được hỗ trợ chi tiết hơn nhé!*
+Để được tư vấn chính xác về điều kiện và thủ tục, bạn vui lòng cung cấp thêm thông tin sản phẩm và hóa đơn nhé. 
+
+*Lưu ý: Tôi là trợ lý ảo với kiến thức chung nên không có quyền truy cập vào dữ liệu hệ thống hoặc chính sách đổi trả nội bộ cụ thể của từng cửa hàng.*
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `2.60s`
+* `llm_calls=1` · `tool_calls=0` · `2.45s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -40,16 +42,16 @@ Chào bạn, sự khác biệt cơ bản giữa đổi hàng và trả hàng nh�
 **Chatbot trả lời**:
 
 ```text
-Chào bạn, để tôi/bộ phận hỗ trợ có thể xử lý nhanh chóng, bạn vui lòng chuẩn bị giúp các thông tin sau:
+Chào bạn, để hỗ trợ tra cứu đơn hàng nhanh chóng, bạn vui lòng chuẩn bị giúp tôi các thông tin sau:
 
-1. **Mã đơn hàng** (hoặc số điện thoại/email dùng khi đặt hàng).
-2. **Mã vận đơn** (nếu liên quan đến việc giao nhận).
-3. **Mã sản phẩm** và **ảnh chụp hóa đơn** hoặc sản phẩm lỗi (nếu cần đổi trả/bảo hành).
+1. **Mã đơn hàng** (hoặc **mã vận đơn** nếu có).
+2. **Số điện thoại** hoặc **email** dùng khi đặt hàng.
+3. Tên sản phẩm hoặc ảnh chụp hóa đơn (nếu cần thiết).
 
-Bạn có cần hỗ trợ tra cứu đơn hàng nào ngay lúc này không ạ?
+Bạn vui lòng cung cấp các thông tin này nhé!
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `1.41s`
+* `llm_calls=1` · `tool_calls=0` · `1.48s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -63,18 +65,16 @@ Bạn có cần hỗ trợ tra cứu đơn hàng nào ngay lúc này không ạ?
 **Chatbot trả lời**:
 
 ```text
-Chào bạn, tôi rất sẵn lòng hỗ trợ bạn! 
+Chào bạn! Để tôi có thể tư vấn chính xác nhất về thời gian và điều kiện đổi trả, bạn vui lòng cung cấp thêm **mã sản phẩm** hoặc **mã đơn hàng** nhé.
 
-Tuy nhiên, tôi là chatbot AI nên hiện **không có quyền truy cập vào dữ liệu nội bộ** của hệ thống cửa hàng. Để tôi có thể tư vấn chính xác nhất, bạn vui lòng cho tôi biết tên cửa hàng hoặc thương hiệu bạn đang mua sắm nhé.
+Tuy nhiên, về chính sách chung (dựa trên tiêu chuẩn thị trường), shop thường hỗ trợ đổi trả trong vòng **7 đến 30 ngày** kể từ khi nhận hàng, với các điều kiện cơ bản sau:
+* Sản phẩm còn nguyên tem, mác, hộp và chưa qua sử dụng, giặt ủi.
+* Có kèm theo hóa đơn mua hàng hoặc xác nhận đơn hàng.
 
-Về quy định đổi trả chung của phần lớn các cửa hàng hiện nay:
-* **Thời gian hỗ trợ:** Thường từ **7 đến 30 ngày** kể từ ngày nhận hàng (tùy chính sách từng shop).
-* **Điều kiện sản phẩm:** Sản phẩm cần giữ nguyên tem mác, nguyên vẹn, chưa qua sử dụng, giặt ủi và có kèm theo hóa đơn mua hàng (nếu có).
-
-Bạn vui lòng cung cấp thêm **mã đơn hàng** hoặc **tên thương hiệu** để tôi kiểm tra chi tiết hơn cho bạn nhé!
+*Lưu ý: Do tôi là trợ lý ảo, tôi không có quyền truy cập vào hệ thống dữ liệu nội bộ để kiểm tra chính sách đổi trả cụ thể của từng đơn hàng. Vui lòng cung cấp thông tin đơn hàng để tôi hướng dẫn bạn chi tiết hơn nhé!*
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `1.74s`
+* `llm_calls=1` · `tool_calls=0` · `1.87s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
@@ -90,13 +90,13 @@ Bạn vui lòng cung cấp thêm **mã đơn hàng** hoặc **tên thương hi�
 ```text
 Chào bạn, tôi rất tiếc khi sản phẩm tai nghe Bluetooth của bạn gặp sự cố lỗi một bên. 
 
-Tuy nhiên, tôi là trợ lý ảo và hiện **không có quyền truy cập vào dữ liệu hệ thống nội bộ**, nên tôi chưa thể trực tiếp kiểm tra trạng thái đơn hàng `ORD1001` hay tạo yêu cầu đổi trả trên hệ thống giúp bạn được.
+Tuy nhiên, do tôi là trợ lý ảo tổng đài, tôi không có quyền truy cập vào dữ liệu nội bộ của hệ thống để kiểm tra trực tiếp trạng thái đơn hàng **ORD1001** hay tạo yêu cầu đổi trả ngay cho bạn.
 
-Để tôi hoặc bộ phận chăm sóc khách hàng hỗ trợ bạn tốt nhất, bạn vui lòng cung cấp thêm:
-* **Số điện thoại hoặc email** đã dùng khi đặt hàng.
-* **Ảnh chụp hoặc video ngắn** thể hiện lỗi sản phẩm (tai nghe không nghe được một bên).
+Để tôi có thể hướng dẫn các bước tiếp theo hoặc ghi nhận thông tin, bạn vui lòng cung cấp thêm:
+1. **Số điện thoại hoặc email** dùng để đặt hàng.
+2. **Ảnh chụp hóa đơn** hoặc **video ngắn** thể hiện lỗi một bên của tai nghe (nếu có).
 
-Bạn có thể liên hệ trực tiếp với bộ phận hỗ trợ khách hàng của cửa hàng để được xử lý đổi trả nhanh chóng nhé!
+Bạn cũng có thể liên hệ trực tiếp với bộ phận chăm sóc khách hàng qua hotline hoặc chat trực tiếp trên website chính thức để được hỗ trợ xử lý đổi trả nhanh nhất nhé!
 ```
 
 * `llm_calls=1` · `tool_calls=0` · `1.68s`
@@ -113,12 +113,12 @@ Bạn có thể liên hệ trực tiếp với bộ phận hỗ trợ khách hà
 **Chatbot trả lời**:
 
 ```text
-Chào bạn, tôi đã ghi nhận yêu cầu đổi trả cho đơn hàng **ORD9999** do sản phẩm bị lỗi. 
+Chào bạn, để tôi có thể hỗ trợ tạo yêu cầu đổi trả cho đơn hàng **ORD9999**, bạn vui lòng cung cấp thêm giúp tôi **số điện thoại hoặc email** dùng khi đặt hàng, cùng với **hình ảnh chụp lỗi của sản phẩm** nhé! 
 
-Tuy nhiên, tôi không có quyền truy cập vào hệ thống dữ liệu nội bộ để xử lý trực tiếp. Vui lòng cung cấp thêm **số điện thoại/email đặt hàng** và **ảnh chụp/video lỗi sản phẩm** để tôi hướng dẫn bạn các bước tiếp theo hoặc chuyển bộ phận chăm sóc khách hàng hỗ trợ nhanh nhất nhé!
+*(Lưu ý: Do tôi không có quyền truy cập trực tiếp vào hệ thống dữ liệu nội bộ, thông tin bạn cung cấp sẽ giúp tôi hướng dẫn bạn thao tác chính xác nhất).*
 ```
 
-* `llm_calls=1` · `tool_calls=0` · `1.68s`
+* `llm_calls=1` · `tool_calls=0` · `1.47s`
 * **Phân loại** (Role 5 điền): `correct` / `safe fallback` / `hallucinated`
 
 ---
