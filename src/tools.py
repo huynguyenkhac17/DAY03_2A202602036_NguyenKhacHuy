@@ -1,22 +1,44 @@
 """
-🛠️ TOOL REGISTRY & SCHEMAS (Dành cho Role 2: Tool & Spec Engineer)
-Nơi khai báo tất cả các "món đồ nghề" mà ReAct Agent có thể gọi.
+Tool Registry & Schemas
+=======================
+
+Module này định nghĩa toàn bộ các tool mà ReAct Agent có thể gọi thông qua
+Function Calling.
+
+Mỗi tool cần:
+- Có type hints đầy đủ.
+- Có docstring mô tả rõ chức năng, tham số và giá trị trả về.
+- Trả về chuỗi (str) để Agent có thể sử dụng trực tiếp trong quá trình suy luận.
+
+Danh sách tool được đăng ký trong AVAILABLE_TOOLS sẽ được Agent
+sử dụng để tìm kiếm và thực thi khi cần.
 """
+
 
 def get_order_status(order_id: str) -> str:
     """
-    Tra cứu trạng thái và thông tin chi tiết của một đơn hàng.
+    Tra cứu thông tin chi tiết của một đơn hàng.
+
+    Tool này nhận vào mã đơn hàng và trả về các thông tin gồm:
+    - Trạng thái đơn hàng
+    - Tên sản phẩm
+    - Ngày đặt hàng
+    - Tổng giá trị đơn hàng
 
     Args:
-        order_id (str): Mã đơn hàng cần tra cứu (ví dụ: ORD1001)
+        order_id (str):
+            Mã đơn hàng cần tra cứu (ví dụ: "ORD1001").
 
     Returns:
-        str: Thông tin trạng thái đơn hàng hoặc thông báo lỗi nếu không tìm thấy
+        str:
+            Chuỗi mô tả thông tin đơn hàng nếu tìm thấy.
+            Nếu không tìm thấy hoặc mã không hợp lệ sẽ trả về thông báo lỗi.
     """
     if not order_id or not str(order_id).strip():
         return "LỖI: Vui lòng cung cấp mã đơn hàng."
 
     order_id = str(order_id).strip().upper()
+
     orders = {
         "ORD1001": {
             "status": "Đã giao",
@@ -39,8 +61,12 @@ def get_order_status(order_id: str) -> str:
     }
 
     order = orders.get(order_id)
+
     if not order:
-        return f"LỖI: Không tìm thấy đơn hàng '{order_id}'. Vui lòng kiểm tra lại mã đơn."
+        return (
+            f"LỖI: Không tìm thấy đơn hàng '{order_id}'. "
+            "Vui lòng kiểm tra lại mã đơn."
+        )
 
     return (
         f"Đơn hàng {order_id}:\n"
@@ -53,47 +79,67 @@ def get_order_status(order_id: str) -> str:
 
 def create_return_request(order_id: str, reason: str) -> str:
     """
-    Tạo yêu cầu đổi/trả cho một đơn hàng đã giao.
+    Tạo yêu cầu đổi hoặc trả hàng.
+
+    Tool này kiểm tra tính hợp lệ của đơn hàng và tạo một yêu cầu
+    đổi/trả dựa trên lý do do khách hàng cung cấp.
+
+    Trong phiên bản demo, chỉ đơn hàng ORD1001 được phép tạo
+    yêu cầu đổi/trả.
 
     Args:
-        order_id (str): Mã đơn hàng cần đổi/trả
-        reason (str): Lý do đổi/trả (ví dụ: sản phẩm lỗi, không đúng mô tả)
+        order_id (str):
+            Mã đơn hàng cần đổi/trả.
+
+        reason (str):
+            Lý do đổi/trả
+            (ví dụ: "Sản phẩm bị lỗi", "Không đúng mô tả"...).
 
     Returns:
-        str: Thông báo xác nhận hoặc lỗi nếu đơn hàng không hợp lệ
+        str:
+            Thông báo xác nhận nếu yêu cầu được tạo thành công,
+            hoặc thông báo lỗi nếu dữ liệu không hợp lệ.
     """
     if not order_id or not str(order_id).strip():
         return "LỖI: Vui lòng cung cấp mã đơn hàng."
+
     if not reason or not str(reason).strip():
         return "LỖI: Vui lòng cho biết lý do đổi/trả."
 
     order_id = str(order_id).strip().upper()
+
     if order_id != "ORD1001":
-        return f"LỖI: Chỉ hỗ trợ tạo yêu cầu đổi/trả cho đơn hàng ORD1001 trong demo này."
+        return (
+            "LỖI: Chỉ hỗ trợ tạo yêu cầu đổi/trả "
+            "cho đơn hàng ORD1001 trong demo này."
+        )
 
     return (
         f"Yêu cầu đổi/trả cho đơn hàng {order_id} đã được ghi nhận.\n"
         f"Lý do: {reason}\n"
-        f"Trạng thái: Đang chờ xác nhận từ bộ phận hỗ trợ"
+        "Trạng thái: Đang chờ xác nhận từ bộ phận hỗ trợ."
     )
 
 
 def get_return_policy() -> str:
     """
-    Trả về chính sách đổi/trả cơ bản cho khách hàng.
+    Trả về chính sách đổi/trả của cửa hàng.
+
+    Tool này được sử dụng khi khách hàng hỏi về quy định đổi,
+    trả hoặc hoàn tiền.
 
     Returns:
-        str: Chính sách đổi/trả ngắn gọn
+        str:
+            Chuỗi mô tả các điều kiện đổi/trả cơ bản của cửa hàng.
     """
     return (
         "Chính sách đổi/trả:\n"
         "- Đơn hàng có thể đổi/trả trong vòng 7 ngày kể từ ngày nhận hàng.\n"
         "- Sản phẩm phải còn nguyên tem, hộp và chưa qua sử dụng.\n"
-        "- Nếu sản phẩm lỗi hoặc giao sai, shop sẽ hỗ trợ miễn phí vận chuyển trả hàng."
+        "- Nếu sản phẩm lỗi hoặc giao sai, shop sẽ hỗ trợ miễn phí "
+        "vận chuyển trả hàng."
     )
 
-
-# Danh sách các tool được đăng ký để Agent sử dụng
 AVAILABLE_TOOLS = {
     "get_order_status": get_order_status,
     "create_return_request": create_return_request,
